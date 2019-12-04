@@ -1,0 +1,43 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity test_fsm_mod is
+   port( ck : in std_logic;
+         y : out std_logic);
+end test_fsm_mod;
+
+architecture Behavioral of test_fsm_mod is
+   type type_state is (s0,s1);
+   signal state : type_state;
+begin
+   process(ck)
+      variable cnt : integer := 0;
+      begin
+         if(ck'event and ck = '1') then
+            cnt := cnt +1;
+            
+            case  state is
+                when s0 => if(cnt >=3) then cnt :=0;
+                              state <= s1;
+                           else state <= s0;
+                           end if;
+               when s1 => if(cnt >=3) then cnt :=0;
+                              state <= s0;
+                           else state <= s1;
+                           end if;
+            end case;
+         end if;
+      end process;
+   y <='0' when state = s0 else
+         '1';
+
+end Behavioral;

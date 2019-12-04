@@ -1,0 +1,22 @@
+entity test_my_mod is
+   port(x,y : in  std_logic_vector(3 downto 0);
+         b_in : in std_logic;
+         b_out : out std_logic;
+         s : out std_logic_vector(3 downto 0));
+
+end test_my_mod;
+
+architecture Behavioral of test_my_mod is
+   signal b : std_logic_vector(0 to 2);
+begin
+   s(0) <= x(0) xor y(0) xor b_in;
+   b(0) <= not(x(0) xor y(0)) or ((not x(0)) and y(0));
+   s(1) <= x(1) xor y(1) xor b(0);
+   b(1) <= not(x(1) xor y(1)) or ((not x(1)) and y(1));
+   s(2) <= x(2) xor y(2) xor b(1);
+   b(2) <= not(x(2) xor y(2)) or ((not x(2)) and y(2));
+   s(3) <= x(3) xor y(3) xor b(2);
+   b_OUT <= not(x(3) xor y(3)) or ((not x(3)) and y(3));
+   
+
+end Behavioral;

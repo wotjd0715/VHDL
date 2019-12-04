@@ -1,0 +1,32 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity test_sign_tb is
+end test_sign_tb;
+
+architecture Behavioral of test_sign_tb is
+   signal ck,rst,rl,gl,bl,arrl : std_logic;
+begin
+
+   main : entity work.test_sign_mod(Behavioral)
+         port map(ck,rst,rl,gl,bl,arrl);
+      
+   process
+      begin
+         ck <= '0'; wait for 10ns;
+         ck <= '1'; wait for 10ns;
+      end process;
+      
+      rst <='0', 
+            '1' after 70ns,
+            '0' after 90ns; 
+end Behavioral;

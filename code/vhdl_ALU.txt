@@ -1,0 +1,105 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date:    11:16:46 07/15/2019 
+-- Design Name: 
+-- Module Name:    test_termproject_mod - Behavioral 
+-- Project Name: 
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
+--
+-- Dependencies: 
+--
+-- Revision: 
+-- Revision 0.01 - File Created
+-- Additional Comments: 
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity test_termproject_mod is
+   port( A,B : in std_logic_vector(7 downto 0);
+         sel : in std_logic_vector(4 downto 0);
+         CarryIn : in std_logic;
+         Y : out std_logic_vector(7 downto 0));
+end test_termproject_mod;
+
+architecture Behavioral of test_termproject_mod is
+begin
+   process(A,B,sel,CarryIn) --입력에 따른 변수설정
+      variable sel_0_1_cin : std_logic_vector(2 downto 0);
+      variable LogicUnit,ArithUnit,ALU_NoShift : std_logic_vector(7 downto 0);
+      variable Carry : std_logic_vector(8 downto 0);
+      variable plus1 : std_logic_vector(7 downto 0);
+      variable minus1 : std_logic_vector(7 downto 0); 
+      constant x : integer := 0; 
+      begin
+         Logic_Unit : case sel(1 downto 0) is --기능표에있는 기본 기능 설정 
+            when "00" => LogicUnit := A and B;
+            when "01" => LogicUnit := A or B;
+            when "10" => LogicUnit := A xor B;
+            when "11" => LogicUnit := not A;
+            when others => LogicUnit := (others =>'X');
+         end case Logic_Unit;
+         
+         sel_0_1_cin := sel(1 downto 0) & CarryIn; --나머지 기능 구분을 위한 case
+         
+         Arith_Unit : case sel_0_1_cin is
+            when "000" => ArithUnit := A;
+            when "001" =>    Carry(0) := '0';
+                           plus1 := "00000001";
+                           
+                           A_add_1 : for x in 0 to 7 loop
+                              ArithUnit(x) := A(x) xor plus1(x) xor Carry(x);
+                              Carry(x+1) :=  ((A(x) xor plus1(x)) and Carry(x)) or (A(x) and plus1(x)); 
+                           end loop A_add_1;
+                           
+            when "010" => Carry(0) := CarryIn;
+                           loop1 : for x in 0 to 7 loop
+                              ArithUnit(x) := A(x) xor B(x) xor Carry(x);
+                              Carry(x+1) :=  ((A(x) xor B(x)) and Carry(x)) or (A(x) and B(x)); 
+                           end loop loop1;
+                           
+            when "110" =>    Carry(0) := '0';
+                           minus1 := "11111111";
+                           
+                           A_minus_1 : for x in 0 to 7 loop
+                              ArithUnit(x) := A(x) xor minus1(x) xor Carry(x);
+                              Carry(x+1) :=  ((A(x) xor minus1(x)) and Carry(x)) or (A(x) and minus1(x)); 
+                           end loop A_minus_1;
+            when others => ArithUnit := (others => 'X');
+         end case Arith_Unit;
+         
+         Check_Logic_Arith : if( sel(2) = '1') then
+                                 ALU_NoShift := LogicUnit;
+                             else ALU_NoShift := ArithUnit;
+                             end if Check_Logic_Arith;
+         
+         Shift : case sel(4 downto 3) is
+            when "00" => Y <= ALU_NoShift;
+            when "01" =>    Y(0) <= A(7);
+                           loop2 : for x in 0 to 6 loop
+                                 Y(x+1) <= A(x);
+                           end loop loop2;
+            when "10" =>    Y(7) <= A(0);
+                           loop3 : for x in 7 downto 1 loop
+                                    Y(x-1) <= A(x);
+                           end loop loop3;
+            when "11" => Y <= (others => '0'); 
+            when others => Y <= (others => 'X');
+         end case Shift;
+   
+   end process;
+end Behavioral;

@@ -1,0 +1,30 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity test_fsm_tb is
+end test_fsm_tb;
+
+architecture Behavioral of test_fsm_tb is
+   component test_fsm_mod
+      port( ck : in std_logic;
+            y : out std_logic);
+   end component;
+   signal ck,y : std_logic;
+begin
+   main : test_fsm_mod port map(ck,y);
+   process
+      begin
+      ck <= '0'; wait for 10ns;
+      ck <= '1'; wait for 10ns;
+      end process;
+
+end Behavioral;

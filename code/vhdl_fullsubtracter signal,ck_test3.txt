@@ -1,0 +1,58 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity test_sign_mod is
+   port( ck,rst : in std_logic;
+         rl,gl,bl,arrl : out std_logic);
+end test_sign_mod;
+
+architecture Behavioral of test_sign_mod is
+   type park_state is (rs,gs,bs,arrs);
+   signal state : park_state;
+begin
+   process(ck,rst)
+      variable cnt : integer := 0;
+      begin
+         if(rst = '1') then
+         state <= rs;
+         elsif(ck'event and ck = '1') then
+               cnt :=  cnt+ 1;
+               case state is
+               when rs => if(cnt>= 3) then cnt := 0;
+                           state <= gs;
+                           else state <= rs;
+                           end if;
+               when gs => if(cnt>= 3) then cnt := 0;
+                           state <= bs;
+                           else state <= gs;
+                           end if;
+               when bs => if(cnt>= 3) then cnt := 0;
+                           state <= arrs;
+                           else state <= bs;
+                           end if;
+               when arrs => if(cnt>= 3) then cnt := 0;
+                           state <= rs;
+                           else state <= arrs;
+                           end if;
+               end case;
+         end if;
+   end process;
+   
+   rl <= '1' when state =rs else
+         '0';
+   gl <= '1' when state =gs else
+         '0';
+   bl <= '1' when state =bs else
+         '0';
+   arrl <= '1' when state =arrs else
+         '0';
+end Behavioral;
